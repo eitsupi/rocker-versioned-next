@@ -1,12 +1,7 @@
 library(readr)
 library(glue)
-library(tibble)
 
-df_versions <- tibble::tribble(
-  ~r_version, ~ubuntu_version, ~cran_url,
-  "4.3.2", "22.04", "https://p3m.dev/cran/__linux__/jammy/latest",
-  "4.0.0", "20.04", "https://p3m.dev/cran/__linux__/focal/2020-06-04"
-)
+df_versions <- readr::read_tsv("variable-tables/r-ver.tsv")
 
 template <- readr::read_file("dockerfile-templates/r-ver.Dockerfile.txt")
 
