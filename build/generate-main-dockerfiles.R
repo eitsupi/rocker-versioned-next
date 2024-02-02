@@ -1,7 +1,8 @@
 library(readr)
 library(glue)
+library(purrr)
 
-df_versions <- readr::read_tsv("variable-tables/r-ver.tsv")
+df_versions <- readr::read_tsv("variable-tables/main.tsv")
 
 template <- readr::read_file("dockerfile-templates/r-ver.Dockerfile.txt")
 
@@ -9,7 +10,8 @@ out <- df_versions |>
   glue::glue_data(
     template,
     .open = "{{",
-    .close = "}}"
+    .close = "}}",
+    .trim = FALSE
   )
 
 purrr::walk2(

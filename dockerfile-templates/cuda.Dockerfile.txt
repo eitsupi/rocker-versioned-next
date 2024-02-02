@@ -1,0 +1,17 @@
+FROM docker.io/rocker/r-ver:{{r_version}} as builder
+
+FROM docker.io/nvidia/cuda:{{cuda_base_tag}}
+
+COPY --from=builder /usr/local/lib/R /usr/local/lib/R
+
+ENV CRAN="{{cran_url}}"
+
+CMD ["R"]
+
+COPY rocker_scripts/config_R_cuda.sh /rocker_scripts/config_R_cuda.sh
+RUN /rocker_scripts/config_R_cuda.sh
+
+COPY rocker_scripts/install_python.sh /rocker_scripts/install_python.sh
+RUN /rocker_scripts/install_python.sh
+
+COPY rocker_scripts /rocker_scripts
