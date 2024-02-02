@@ -12,4 +12,4 @@ RUN /rocker_scripts/setup_R.sh
 
 CMD ["R"]
 
-COPY scripts /rocker_scripts
+COPY rocker_scripts /rocker_scripts
