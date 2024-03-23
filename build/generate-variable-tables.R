@@ -259,3 +259,15 @@ rstudio_versions <- function() {
     ) |>
     dplyr::arrange(rstudio_commit_date)
 }
+
+
+r_versions_with_freeze_dates() |>
+  readr::write_tsv("variable-tables/r-versions.tsv", na = "")
+
+
+ubuntu_lts_versions() |>
+  readr::write_tsv("variable-tables/ubuntu-lts-versions.tsv", na = "")
+
+
+rstudio_versions() |>
+  readr::write_tsv("variable-tables/rstudio-versions.tsv", na = "")
