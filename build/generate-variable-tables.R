@@ -13,7 +13,7 @@ library(gert)
 
 
 #' Search the latest P3M CRAN mirror URL for Linux at a given date
-#' @param date A character of date like `"2023-10-30"` or `NA`.
+#' @param date A single character of date like `"2023-10-30"` or `NA`.
 #' If `NA`, the "latest" URL will be returned.
 #' @param distro_version_name A character of distro version name like `"focal"`.
 #' @param r_version A character of R version like `"4.3.0"`.
@@ -57,14 +57,13 @@ latest_p3m_cran_url_linux <- function(date, distro_version_name, r_version) {
 
 
 #' A funtion to make P3M CRAN mirror URL for Linux
-#' @param date A character of date like `"2023-10-30"` or `NA`.
+#' @param date A character vector of dates like `"2023-10-30"`.
 #' If `NA`, the "latest" URL will be returned.
 #' @param distro_version_name A character of distro version name like `"focal"`.
 #' @param type A character of package type, `"source"` (default) or `"binary"`.
 #' @return A character of P3M CRAN mirror URL.
 #' @examples
-#' make_rspm_cran_url_linux("2023-10-30", "focal", "binary")
-#' make_rspm_cran_url_linux(NA, "jammy", "binary")
+#' make_p3m_cran_url_linux(c("2023-10-30", NA), "focal", "binary")
 make_p3m_cran_url_linux <- function(date, distro_version_name, type = "source") {
   base_url <- "https://p3m.dev/cran"
 
@@ -78,7 +77,7 @@ make_p3m_cran_url_linux <- function(date, distro_version_name, type = "source") 
 
 
 #' Check if a CRAN URL is available via [pak::repo_ping()]
-#' @param url A character of CRAN URL.
+#' @param url A single character of CRAN URL.
 #' @param r_version A character of R version like `"4.3.0"`.
 is_cran_url_available <- function(url, r_version) {
   glue::glue("\n\nfor R {r_version}, repo_ping to {url}\n\n") |>
@@ -93,7 +92,7 @@ is_cran_url_available <- function(url, r_version) {
 
 
 #' Get the commit date from a GitHub API URL for a Git commit
-#' @param commit_url A character of GitHub API URL for a commit.
+#' @param commit_url A single character of GitHub API URL for a commit.
 #' e.g. `"https://api.github.com/repos/rstudio/rstudio/commits/7d165dcfc1b6d300eb247738db2c7076234f6ef0"`
 #' @return A character of commit date.
 #' @examples
@@ -113,7 +112,7 @@ get_github_commit_date <- function(commit_url) {
 
 
 #' Check if an RStudio deb package (amd64) is available
-#' @param rstudio_version A character of RStudio version like `"2023.12.0+369"`.
+#' @param rstudio_version A single character of RStudio version like `"2023.12.0+369"`.
 #' @param ubuntu_series A character of Ubuntu series like `"jammy"`.
 #' @return A logical value.
 #' @examples
@@ -136,4 +135,55 @@ is_rstudio_deb_available <- function(rstudio_version, ubuntu_series) {
     isFALSE()
 
   is_available
+}
+
+
+#' Get the latest CTAN URL for a given date
+#' @param date A [Date] class vector.
+#' If `NA`, the "latest" URL will be returned.
+#' @return A character of CTAN URL.
+#' @examples
+#' latest_ctan_url(as.Date(c("2023-10-30", NA)))
+latest_ctan_url <- function(date) {
+  .url <- dplyr::if_else(
+    is.na(date), "https://mirror.ctan.org/systems/texlive/tlnet",
+    stringr::str_c("https://www.texlive.info/tlnet-archive/", format(date, "%Y/%m/%d"), "/tlnet")
+  )
+
+  .url
+}
+
+
+#' Get the latest version from Git remote tags
+#' @param remote_repo A single character of Git remote repository URL.
+#' @return A character of the latest version.
+#' @examples
+#' latest_version_of_git_repo("https://github.com/OSGeo/PROJ.git")
+latest_version_of_git_repo <- function(remote_repo) {
+  gert::git_remote_ls(remote = remote_repo) |>
+    dplyr::pull(ref) |>
+    stringr::str_subset(r"(^refs/tags/v?(\d+\.){2}\d+$)") |>
+    stringr::str_extract(r"((\d+\.)*\d+$)") |>
+    package_version() |>
+    sort() |>
+    utils::tail(1) |>
+    as.character()
+}
+
+
+#' Paste each element of vectors in a cartesian product
+#' @param ... Dynamic dots. Character vectors to paste.
+#' @return A character vector.
+#' @examples
+#' outer_paste(c("a", "b"), "-", c("c", "d", "e"))
+outer_paste <- function(...) {
+  .paste <- function(x, y) {
+    outer(x, y, stringr::str_c) |>
+      c()
+  }
+
+  out <- rlang::list2(...) |>
+    purrr::reduce(.paste)
+
+  out
 }
