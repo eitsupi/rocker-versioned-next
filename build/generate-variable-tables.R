@@ -187,3 +187,75 @@ outer_paste <- function(...) {
 
   out
 }
+
+
+#' Get R versions table
+#' @param min_version A single character of minimum R version like `"4.0.0"`.
+#' @return A [tibble::tibble] of R versions.
+#' - r_version: Character, R version. e.g. `"4.0.0"`.
+#' - r_release_date: Date, R release date.
+#' - r_freeze_date: Date, The date before the next R release.
+#' @examples
+#' r_versions_with_freeze_dates()
+r_versions_with_freeze_dates <- function(min_version = "4.0.0") {
+  rversions::r_versions() |>
+    tibble::as_tibble() |>
+    dplyr::mutate(
+      r_version = version,
+      r_release_date = as.Date(date),
+      r_freeze_date = dplyr::lead(r_release_date, 1) - 1,
+      .keep = "none"
+    ) |>
+    dplyr::filter(package_version(r_version) >= package_version(min_version)) |>
+    dplyr::arrange(r_release_date)
+}
+
+
+#' Get Ubuntu LTS versions table
+#' @return A [tibble::tibble] of Ubuntu LTS versions.
+#' - ubuntu_version: Character, Ubuntu version. e.g. `"20.04"`.
+#' - ubuntu_series: Character, Ubuntu series. e.g. `"focal"`.
+#' - ubuntu_release_date: Date, Ubuntu release date.
+#' @examples
+#' ubuntu_lts_versions()
+ubuntu_lts_versions <- function() {
+  # On Ubuntu, the local file `/usr/share/distro-info/ubuntu.csv` is the same.
+  readr::read_csv(
+    "https://git.launchpad.net/ubuntu/+source/distro-info-data/plain/ubuntu.csv",
+    show_col_types = FALSE
+  ) |>
+    suppressWarnings() |>
+    dplyr::filter(stringr::str_detect(version, "LTS")) |>
+    dplyr::mutate(
+      ubuntu_version = stringr::str_extract(version, "^\\d+\\.\\d+"),
+      ubuntu_series = series,
+      ubuntu_release_date = release,
+      .keep = "none"
+    ) |>
+    dplyr::arrange(ubuntu_release_date)
+}
+
+
+#' Get RSutdio IDE versions table
+#' @return A [tibble::tibble] of RStudio IDE versions.
+#' - rstudio_version: Character, RStudio version. e.g. `"2023.12.0+369"`.
+#' - rstudio_commit_date: Date, the date of the release commit.
+rstudio_versions <- function() {
+  gert::git_remote_ls(remote = "https://github.com/rstudio/rstudio.git") |>
+    dplyr::filter(stringr::str_detect(ref, "^refs/tags/v")) |>
+    dplyr::mutate(
+      rstudio_version = stringr::str_extract(ref, r"(\d+\.\d+\.\d+.{0,1}\d*)"),
+      commit_url = glue::glue("https://api.github.com/repos/rstudio/rstudio/commits/{oid}"),
+      .keep = "none"
+    ) |>
+    dplyr::slice_tail(n = 10) |>
+    dplyr::rowwise() |>
+    dplyr::mutate(rstudio_commit_date = get_github_commit_date(commit_url)) |>
+    dplyr::ungroup() |>
+    tidyr::drop_na() |>
+    dplyr::select(
+      rstudio_version,
+      rstudio_commit_date
+    ) |>
+    dplyr::arrange(rstudio_commit_date)
+}
