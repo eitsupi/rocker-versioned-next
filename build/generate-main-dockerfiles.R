@@ -1,24 +1,63 @@
 library(readr)
 library(glue)
 library(purrr)
+library(dplyr)
+library(fs)
 
-df_versions <- readr::read_tsv("variable-tables/main.tsv")
 
-template <- readr::read_file("dockerfile-templates/r-ver.Dockerfile.txt")
+#' Write a Dockerfiles with the given template and data frame of variables
+#' @param ... Ignored.
+#' @param data A data frame of variables.
+#' Must have a column named `r_version`.
+#' @param dockerfile_template A character of a Dockerfile template
+#' @param path_template A character of output Dockerfile path template
+#' @return A data frame invisibly.
+#' @examples
+#' write_dockerfiles(
+#'   data = data.frame(r_version = "4.0.0"),
+#'   dockerfile_template = "FROM rocker/r-ver:{{r_version}}",
+#'   path_template = "dockerfiles/r-ver_{{r_version}}.Dockerfile"
+#' )
+write_dockerfiles <- function(..., data, dockerfile_template, path_template) {
+  data |>
+    dplyr::mutate(
+      dockerfile = glue::glue(
+        dockerfile_template,
+        .open = "{{",
+        .close = "}}",
+        .trim = FALSE
+      )
+    ) |>
+    purrr::pwalk(
+      \(...) {
+        dots <- list(...)
+        readr::write_file(
+          dots$dockerfile,
+          glue::glue(
+            path_template,
+            r_version = dots$r_version,
+            .open = "{{",
+            .close = "}}",
+            .trim = FALSE
+          )
+        )
+      }
+    )
+}
 
-out <- df_versions |>
-  glue::glue_data(
-    template,
-    .open = "{{",
-    .close = "}}",
-    .trim = FALSE
+
+df_args <- fs::dir_ls(path = "versioned-args", glob = "*.json") |>
+  purrr::map(
+    \(x) jsonlite::fromJSON(x, flatten = TRUE) |>
+      purrr::modify_if(is.null, \(x) NA) |>
+      tibble::as_tibble()
+  ) |>
+  purrr::list_rbind()
+
+
+df_args |>
+  write_dockerfiles(
+    data = _,
+    dockerfile_template = readr::read_file("dockerfile-templates/r-ver.Dockerfile.txt"),
+    path_template = "dockerfiles/r-ver_{{r_version}}.Dockerfile"
   )
-
-purrr::walk2(
-  out,
-  df_versions$r_version,
-  \(text, r_version) readr::write_file(
-    text,
-    glue::glue("dockerfiles/r-ver_{r_version}.Dockerfile")
-  )
-)

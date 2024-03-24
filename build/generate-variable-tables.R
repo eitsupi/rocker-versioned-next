@@ -337,6 +337,7 @@ rocker_versioned_args() |>
     \(...) {
       dots <- rlang::list2(...)
       list(
+        r_version = dots$r_version,
         r_release_date = dots$r_release_date,
         r_freeze_date = dots$r_freeze_date,
         ubuntu_series = dots$ubuntu_series,
