@@ -61,3 +61,23 @@ df_args |>
     dockerfile_template = readr::read_file("dockerfile-templates/r-ver.Dockerfile.txt"),
     path_template = "dockerfiles/r-ver_{{r_version}}.Dockerfile"
   )
+
+tibble::tribble(
+  ~.name, ~.template_path,
+  "r-ver", "dockerfile-templates/r-ver.Dockerfile.txt",
+  "rstudio", "dockerfile-templates/rstudio.Dockerfile.txt",
+) |>
+  purrr::pwalk(
+    \(...) {
+      dots <- rlang::list2(...)
+      df_args |>
+        write_dockerfiles(
+          data = _,
+          dockerfile_template = readr::read_file(dots$.template_path),
+          path_template = glue::glue(
+            "dockerfiles/{dots$.name}_{{{{r_version}}}}.Dockerfile",
+            .trim = FALSE
+          ),
+        )
+    }
+  )
