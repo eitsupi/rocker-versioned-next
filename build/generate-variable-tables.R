@@ -240,10 +240,13 @@ ubuntu_lts_versions <- function() {
 
 
 #' Get RSutdio IDE versions table
+#' @param ... Ignored.
+#' @param .n A single integer of the number of versions to get.
+#' This function calls the GitHub API this times.
 #' @return A [tibble::tibble] of RStudio IDE versions.
 #' - rstudio_version: Character, RStudio version. e.g. `"2023.12.0+369"`.
 #' - rstudio_commit_date: Date, the date of the release commit.
-rstudio_versions <- function() {
+rstudio_versions <- function(..., .n = 10) {
   gert::git_remote_ls(remote = "https://github.com/rstudio/rstudio.git") |>
     dplyr::filter(stringr::str_detect(ref, "^refs/tags/v")) |>
     dplyr::mutate(
@@ -251,7 +254,7 @@ rstudio_versions <- function() {
       commit_url = glue::glue("https://api.github.com/repos/rstudio/rstudio/commits/{oid}"),
       .keep = "none"
     ) |>
-    dplyr::slice_tail(n = 10) |>
+    dplyr::slice_tail(n = .n) |>
     dplyr::rowwise() |>
     dplyr::mutate(rstudio_commit_date = get_github_commit_date(commit_url)) |>
     dplyr::ungroup() |>
