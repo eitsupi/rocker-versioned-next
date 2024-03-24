@@ -1,0 +1,7 @@
+r_version	r_release_date	r_freeze_date	ubuntu_series	cran	rstudio_version	ctan
+4.2.2	2022-10-31	2023-03-14	jammy	https://p3m.dev/cran/__linux__/jammy/2023-03-14	2023.03.0+386	https://www.texlive.info/tlnet-archive/2023/03/14/tlnet
+4.2.3	2023-03-15	2023-04-20	jammy	https://p3m.dev/cran/__linux__/jammy/2023-04-20	2023.03.0+386	https://www.texlive.info/tlnet-archive/2023/04/20/tlnet
+4.3.0	2023-04-21	2023-06-15	jammy	https://p3m.dev/cran/__linux__/jammy/2023-06-15	2023.06.0+421	https://www.texlive.info/tlnet-archive/2023/06/15/tlnet
+4.3.1	2023-06-16	2023-10-30	jammy	https://p3m.dev/cran/__linux__/jammy/2023-10-30	2023.09.1+494	https://www.texlive.info/tlnet-archive/2023/10/30/tlnet
+4.3.2	2023-10-31	2024-02-28	jammy	https://p3m.dev/cran/__linux__/jammy/2024-02-28	2023.12.0+369	https://www.texlive.info/tlnet-archive/2024/02/28/tlnet
+4.3.3	2024-02-29		jammy	https://p3m.dev/cran/__linux__/jammy/latest	2023.12.0+369	https://mirror.ctan.org/systems/texlive/tlnet

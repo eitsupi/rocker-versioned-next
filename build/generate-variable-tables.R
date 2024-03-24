@@ -124,6 +124,9 @@ is_rstudio_deb_available <- function(rstudio_version, ubuntu_series) {
     .default = ubuntu_series
   )
 
+  glue::glue("\n\nChecking RStudio {rstudio_version} for {os_ver}\n\n") |>
+    cat()
+
   is_available <- glue::glue(
     "https://download2.rstudio.org/server/{os_ver}/amd64/rstudio-server-{rstudio_version}-amd64.deb"
   ) |>
@@ -261,6 +264,59 @@ rstudio_versions <- function() {
 }
 
 
+rocker_versioned_args <- function(
+    ...,
+    r_versions_file = "variable-tables/r-versions.tsv",
+    ubuntu_lts_versions_file = "variable-tables/ubuntu-lts-versions.tsv",
+    rstudio_versions_file = "variable-tables/rstudio-versions.tsv") {
+  df_all <- readr::read_tsv(r_versions_file, show_col_types = FALSE) |>
+    tidyr::expand_grid(
+      readr::read_tsv(
+        ubuntu_lts_versions_file,
+        show_col_types = FALSE,
+        col_types = list(ubuntu_version = readr::col_character())
+      )
+    ) |>
+    dplyr::filter(r_release_date >= ubuntu_release_date + 90) |>
+    dplyr::slice_max(ubuntu_release_date, with_ties = FALSE, by = r_version) |>
+    tidyr::expand_grid(
+      readr::read_tsv(
+        rstudio_versions_file,
+        show_col_types = FALSE
+      )
+    ) |>
+    dplyr::filter(
+      r_freeze_date > rstudio_commit_date | is.na(r_freeze_date)
+    )
+
+  df_available_rstudio <- df_all |>
+    dplyr::distinct(ubuntu_series, rstudio_version) |>
+    dplyr::filter(
+      purrr::map2_lgl(rstudio_version, ubuntu_series, is_rstudio_deb_available)
+    )
+
+  df_all |>
+    dplyr::semi_join(df_available_rstudio, by = c("ubuntu_series", "rstudio_version")) |>
+    dplyr::slice_max(rstudio_version, with_ties = FALSE, by = c(r_version, ubuntu_series)) |>
+    dplyr::mutate(
+      ctan = latest_ctan_url(r_freeze_date),
+      cran = purrr::pmap_chr(
+        list(r_freeze_date, ubuntu_series, r_version),
+        \(...) latest_p3m_cran_url_linux(...)
+      )
+    ) |>
+    dplyr::select(
+      r_version,
+      r_release_date,
+      r_freeze_date,
+      ubuntu_series,
+      cran,
+      rstudio_version,
+      ctan,
+    )
+}
+
+
 r_versions_with_freeze_dates() |>
   readr::write_tsv("variable-tables/r-versions.tsv", na = "")
 
@@ -271,3 +327,7 @@ ubuntu_lts_versions() |>
 
 rstudio_versions() |>
   readr::write_tsv("variable-tables/rstudio-versions.tsv", na = "")
+
+
+rocker_versioned_args() |>
+  readr::write_tsv("variable-tables/rocker-versioned-args.tsv", na = "")
