@@ -55,13 +55,6 @@ df_args <- fs::dir_ls(path = "versioned-args", glob = "*.json") |>
   purrr::list_rbind()
 
 
-df_args |>
-  write_dockerfiles(
-    data = _,
-    dockerfile_template = readr::read_file("dockerfile-templates/r-ver.Dockerfile.txt"),
-    path_template = "dockerfiles/r-ver_{{r_version}}.Dockerfile"
-  )
-
 tibble::tribble(
   ~.name, ~.template_path,
   "r-ver", "dockerfile-templates/r-ver.Dockerfile.txt",
