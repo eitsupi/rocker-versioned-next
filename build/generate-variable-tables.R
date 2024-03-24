@@ -124,7 +124,7 @@ is_rstudio_deb_available <- function(rstudio_version, ubuntu_series) {
     .default = ubuntu_series
   )
 
-  glue::glue("\n\nChecking RStudio {rstudio_version} for {os_ver}\n\n") |>
+  glue::glue("\n\nChecking RStudio Sever {rstudio_version} deb package for {os_ver}\n\n") |>
     cat()
 
   is_available <- glue::glue(
@@ -312,7 +312,7 @@ rocker_versioned_args <- function(
       ubuntu_series,
       cran,
       rstudio_version,
-      ctan,
+      ctan
     )
 }
 
@@ -330,4 +330,21 @@ rstudio_versions() |>
 
 
 rocker_versioned_args() |>
-  readr::write_tsv("variable-tables/rocker-versioned-args.tsv", na = "")
+  purrr::pwalk(
+    \(...) {
+      dots <- rlang::list2(...)
+      list(
+        r_release_date = dots$r_release_date,
+        r_freeze_date = dots$r_freeze_date,
+        ubuntu_series = dots$ubuntu_series,
+        cran = dots$cran,
+        rstudio_version = dots$rstudio_version,
+        ctan = dots$ctan
+      ) |>
+        jsonlite::write_json(
+          glue::glue("versioned-args/{dots$r_version}.json"),
+          auto_unbox = TRUE,
+          pretty = TRUE
+        )
+    }
+  )

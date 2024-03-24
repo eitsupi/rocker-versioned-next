@@ -1,0 +1,8 @@
+{
+  "r_release_date": "2023-06-16",
+  "r_freeze_date": "2023-10-30",
+  "ubuntu_series": "jammy",
+  "cran": "https://p3m.dev/cran/__linux__/jammy/2023-10-30",
+  "rstudio_version": "2023.09.1+494",
+  "ctan": "https://www.texlive.info/tlnet-archive/2023/10/30/tlnet"
+}
