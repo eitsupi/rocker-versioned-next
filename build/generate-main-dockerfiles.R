@@ -1,10 +1,3 @@
-library(readr)
-library(glue)
-library(purrr)
-library(dplyr)
-library(fs)
-
-
 #' Write a Dockerfiles with the given template and data frame of variables
 #' @param ... Ignored.
 #' @param data A data frame of variables.

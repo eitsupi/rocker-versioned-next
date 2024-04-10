@@ -1,6 +1,3 @@
-library(readr)
-library(glue)
-
 df_versions <- readr::read_tsv("variable-tables/cuda.tsv")
 
 out <- df_versions |>
