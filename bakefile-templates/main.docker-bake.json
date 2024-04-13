@@ -24,7 +24,7 @@
       "labels": {
         "org.opencontainers.image.title": "rocker/r-ver",
         "org.opencontainers.image.description": "Reproducible builds to fixed version of R",
-        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:jammy",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:{{ubuntu_series}}",
         "org.opencontainers.image.version": null
       },
       "tags": [],
@@ -38,7 +38,7 @@
       "labels": {
         "org.opencontainers.image.title": "rocker/rstudio",
         "org.opencontainers.image.description": "RStudio Server with fixed version of R",
-        "org.opencontainers.image.base.name": "docker.io/rocker/r-ver:{{r_version}}",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:{{ubuntu_series}}",
         "org.opencontainers.image.version": "R-{{r_version}}"
       },
       "tags": [],
@@ -52,7 +52,7 @@
       "labels": {
         "org.opencontainers.image.title": "rocker/tidyverse",
         "org.opencontainers.image.description": "Version-stable build of R, RStudio Server, and R packages.",
-        "org.opencontainers.image.base.name": "docker.io/rocker/rstudio:{{r_version}}",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:{{ubuntu_series}}",
         "org.opencontainers.image.version": "R-{{r_version}}"
       },
       "tags": [],
@@ -66,7 +66,7 @@
       "labels": {
         "org.opencontainers.image.title": "rocker/verse",
         "org.opencontainers.image.description": "Adds tex & related publishing packages to version-locked tidyverse image.",
-        "org.opencontainers.image.base.name": "docker.io/rocker/tidyverse:{{r_version}}",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:{{ubuntu_series}}",
         "org.opencontainers.image.version": "R-{{r_version}}"
       },
       "tags": [],
@@ -80,7 +80,7 @@
       "labels": {
         "org.opencontainers.image.title": "rocker/geospatial",
         "org.opencontainers.image.description": "Docker-based Geospatial toolkit for R, built on versioned Rocker image.",
-        "org.opencontainers.image.base.name": "docker.io/rocker/verse:{{r_version}}",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:{{ubuntu_series}}",
         "org.opencontainers.image.version": "R-{{r_version}}"
       },
       "tags": [],
@@ -94,7 +94,7 @@
       "labels": {
         "org.opencontainers.image.title": "rocker/shiny",
         "org.opencontainers.image.description": "Shiny Server on versioned Rocker image.",
-        "org.opencontainers.image.base.name": "docker.io/rocker/r-ver:{{r_version}}",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:{{ubuntu_series}}",
         "org.opencontainers.image.version": "R-{{r_version}}"
       },
       "tags": [],
@@ -108,7 +108,7 @@
       "labels": {
         "org.opencontainers.image.title": "rocker/shiny-verse",
         "org.opencontainers.image.description": "Rocker Shiny image + Tidyverse R packages. Uses version-stable image.",
-        "org.opencontainers.image.base.name": "docker.io/rocker/shiny:{{r_version}}",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:{{ubuntu_series}}",
         "org.opencontainers.image.version": "R-{{r_version}}"
       },
       "tags": [],
@@ -122,7 +122,7 @@
       "labels": {
         "org.opencontainers.image.title": "rocker/binder",
         "org.opencontainers.image.description": "Adds Jupyter to rocker/geospatial. RStudio Server can be started from Jupyter.",
-        "org.opencontainers.image.base.name": "docker.io/rocker/geospatial:{{r_version}}",
+        "org.opencontainers.image.base.name": "docker.io/library/ubuntu:{{ubuntu_series}}",
         "org.opencontainers.image.version": "R-{{r_version}}"
       },
       "tags": [],
