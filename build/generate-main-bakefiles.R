@@ -17,8 +17,49 @@ write_bakefiles <- function(..., data, bakefile_template, path_template) {
 }
 
 
+#' Outer paste of vectors
+#' @param ... Character vectors to paste
+#' @return A character vector
+#' @examples
+#' outer_paste("foo", c("-", "+"), c("bar", "baz"))
+outer_paste <- function(...) {
+  rlang::list2(...) |>
+    purrr::reduce(\(x, y) {
+      outer(x, y, stringr::str_c) |> c()
+    })
+}
+
+
+generate_tags <- function(base_name,
+                          ...,
+                          r_version,
+                          r_minor_latest = FALSE,
+                          r_major_latest = FALSE,
+                          use_latest_tag = TRUE,
+                          tag_suffix = "",
+                          latest_tag = "latest") {
+  rlang::check_dots_empty()
+
+  .tags <- outer_paste(base_name, ":", r_version, tag_suffix)
+
+  r_minor_version <- stringr::str_extract(r_version, "^\\d+\\.\\d+")
+  r_major_version <- stringr::str_extract(r_version, "^\\d+")
+
+  if (r_minor_latest == TRUE) {
+    .tags <- c(.tags, outer_paste(base_name, ":", r_minor_version, tag_suffix))
+  }
+  if (r_major_latest == TRUE) {
+    .tags <- c(.tags, outer_paste(base_name, ":", r_major_version, tag_suffix))
+    if (use_latest_tag == TRUE) {
+      .tags <- c(.tags, outer_paste(base_name, ":", latest_tag))
+    }
+  }
+
+  .tags
+}
+
+
 # TODO: update json
-# TODO: generate tags
 # TODO: update cache-from/to
 
 df_args <- fs::dir_ls(path = "versioned-args", glob = "*.json") |>
