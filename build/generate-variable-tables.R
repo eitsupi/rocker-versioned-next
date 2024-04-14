@@ -267,6 +267,7 @@ rstudio_versions <- function(..., .n = 10) {
 }
 
 
+# TODO: re-add r_minor_latest and r_major_latest
 rocker_versioned_args <- function(
     ...,
     r_versions_file = "variable-tables/r-versions.tsv",
