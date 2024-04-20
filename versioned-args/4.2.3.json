@@ -5,5 +5,7 @@
   "ubuntu_series": "jammy",
   "cran": "https://p3m.dev/cran/__linux__/jammy/2023-04-20",
   "rstudio_version": "2023.03.0+386",
-  "ctan": "https://www.texlive.info/tlnet-archive/2023/04/20/tlnet"
+  "ctan": "https://www.texlive.info/tlnet-archive/2023/04/20/tlnet",
+  "r_major_latest": false,
+  "r_minor_latest": true
 }

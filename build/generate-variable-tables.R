@@ -274,6 +274,20 @@ rocker_versioned_args <- function(
     ubuntu_lts_versions_file = "variable-tables/ubuntu-lts-versions.tsv",
     rstudio_versions_file = "variable-tables/rstudio-versions.tsv") {
   df_all <- readr::read_tsv(r_versions_file, show_col_types = FALSE) |>
+    dplyr::arrange(as.numeric_version(r_version)) |>
+    dplyr::mutate(
+      r_minor_version = stringr::str_extract(r_version, r"(^\d+\.\d+)"),
+      r_major_version = stringr::str_extract(r_version, r"(^\d+)"),
+    ) |>
+    dplyr::mutate(
+      r_minor_latest = dplyr::if_else(dplyr::row_number() == dplyr::n(), TRUE, FALSE),
+      .by = r_minor_version
+    ) |>
+    dplyr::mutate(
+      r_major_latest = dplyr::if_else(dplyr::row_number() == dplyr::n(), TRUE, FALSE),
+      .by = r_major_version
+    ) |>
+    dplyr::select(!c(r_minor_version, r_major_version)) |>
     tidyr::expand_grid(
       readr::read_tsv(
         ubuntu_lts_versions_file,
@@ -316,7 +330,9 @@ rocker_versioned_args <- function(
       ubuntu_series,
       cran,
       rstudio_version,
-      ctan
+      ctan,
+      r_major_latest,
+      r_minor_latest
     )
 }
 
@@ -337,15 +353,7 @@ rocker_versioned_args() |>
   purrr::pwalk(
     \(...) {
       dots <- rlang::list2(...)
-      list(
-        r_version = dots$r_version,
-        r_release_date = dots$r_release_date,
-        r_freeze_date = dots$r_freeze_date,
-        ubuntu_series = dots$ubuntu_series,
-        cran = dots$cran,
-        rstudio_version = dots$rstudio_version,
-        ctan = dots$ctan
-      ) |>
+      dots |>
         jsonlite::write_json(
           glue::glue("versioned-args/{dots$r_version}.json"),
           auto_unbox = TRUE,
