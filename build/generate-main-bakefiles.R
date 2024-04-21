@@ -1,4 +1,3 @@
-# TODO: update cache-from
 #' @param ... Named arguments
 #' @param bakefile_template A character of a template for docker-bake.json
 #' @param path_template A character of output path template
