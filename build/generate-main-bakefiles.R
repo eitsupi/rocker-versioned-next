@@ -4,7 +4,7 @@
 #' @param path_template A character of output path template
 #' @return A data frame invisibly.
 #' @examples
-#' write_bakefiles(
+#' write_bakefile(
 #'   r_version = "4.0.0",
 #'   ubuntu_series = "focal",
 #'   r_minor_latest = TRUE,
@@ -12,7 +12,7 @@
 #'   bakefile_template = r"({"target": {"r-ver": {"dockerfile": "dockerfiles/r-ver_{{r_version}}.Dockerfile"}}})",
 #'   path_template = "bakefiles/{{r_version}}.docker-bake.json"
 #' )
-write_bakefiles <- function(..., bakefile_template, path_template) {
+write_bakefile <- function(..., bakefile_template, path_template) {
   dots <- rlang::list2(...)
   bake_json_content <- glue::glue_data(
     dots,
@@ -196,7 +196,7 @@ df_args |>
       write_bakefile(
         ...,
         bakefile_template = readr::read_file("bakefile-templates/main.docker-bake.json"),
-        path_template = "bakefiles/{{{{r_version}}}}.docker-bake.json"
+        path_template = "bakefiles/{{r_version}}.docker-bake.json"
       )
     }
   )
