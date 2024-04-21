@@ -22,7 +22,7 @@ write_bakefile <- function(..., bakefile_template, path_template) {
   ) |>
     jsonlite::fromJSON()
 
-  default_labels <- c(
+  default_labels <- list(
     org.opencontainers.image.source = "https://github.com/rocker-org/rocker-versioned2"
   )
 
