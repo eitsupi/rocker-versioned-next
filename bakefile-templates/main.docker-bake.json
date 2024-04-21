@@ -7,11 +7,10 @@
             "r-ver",
             "rstudio",
             "tidyverse",
-            "verse",
-            "geospatial",
             "shiny",
             "shiny-verse",
-            "binder"
+            "verse",
+            "geospatial"
           ]
         }
       ]

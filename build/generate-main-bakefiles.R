@@ -1,19 +1,9 @@
-#' @param ... Ignored.
-#' @param data A data frame of variables.
-#' Must have a column named `r_version` and `ubuntu_series`.
+#' @param ... Named arguments
 #' @param bakefile_template A character of a template for docker-bake.json
 #' @param path_template A character of output path template
 #' @return A data frame invisibly.
-write_bakefiles <- function(..., data, bakefile_template, path_template) {
-  data |>
-    dplyr::mutate(
-      dockerfile = glue::glue(
-        bakefile_template,
-        .open = "{{",
-        .close = "}}",
-        .trim = FALSE
-      )
-    )
+write_bakefiles <- function(..., bakefile_template, path_template) {
+  dots <- rlang::list2(...)
 }
 
 
@@ -69,3 +59,14 @@ df_args <- fs::dir_ls(path = "versioned-args", glob = "*.json") |>
       tibble::as_tibble()
   ) |>
   purrr::list_rbind()
+
+df_args |>
+  purrr::pwalk(
+    \(...) {
+      write_bakefile(
+        ...,
+        bakefile_template = readr::read_file("bakefile-templates/main.bakefile.json"),
+        path_template = "bakefiles/{{{{r_version}}}}.docker-bake.json"
+      )
+    }
+  )
