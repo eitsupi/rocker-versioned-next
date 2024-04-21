@@ -1,9 +1,24 @@
+# TODO: update json
+# TODO: update cache-from/to
 #' @param ... Named arguments
 #' @param bakefile_template A character of a template for docker-bake.json
 #' @param path_template A character of output path template
 #' @return A data frame invisibly.
+#' @examples
+#' write_bakefiles(
+#'   r_version = "4.0.0",
+#'   bakefile_template = r"({"target": {"foo": {"dockerfile": "dockerfiles/r-ver_{{r_version}}.Dockerfile"}}})",
+#'   path_template = "bakefiles/{{r_version}}.docker-bake.json"
+#' )
 write_bakefiles <- function(..., bakefile_template, path_template) {
   dots <- rlang::list2(...)
+  bake_json_content <- glue::glue_data(
+    dots,
+    bakefile_template,
+    .open = "{{",
+    .close = "}}",
+    .trim = FALSE
+  )
 }
 
 
@@ -48,9 +63,6 @@ generate_tags <- function(base_name,
   .tags
 }
 
-
-# TODO: update json
-# TODO: update cache-from/to
 
 df_args <- fs::dir_ls(path = "versioned-args", glob = "*.json") |>
   purrr::map(
